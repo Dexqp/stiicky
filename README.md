@@ -9,7 +9,7 @@ Instructions:
 
 
 # commands
-to use these commands make a role names "Admin" and start the bot. Next open the json file and change the "allowed_role": "Admin" to any role you want and use the !restart command
+to use these commands make a role names "Admin" (case sensitive) and start the bot. Next open the json file and change the "allowed_role": "Admin" to any role you want and use the !restart command
 
 !clearall - Deletes all previously sent messages by the bot in all channels in the server
 !restart - Restarts the bot (use this if you made changes to the json while it's running
