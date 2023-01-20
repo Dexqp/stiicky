@@ -52,10 +52,7 @@ with open("config.json") as config_file:
 #number of messages the bot can send at a time (keep this at 1)
 semaphore = asyncio.Semaphore(1)
 
-commands = {}
-for name, function in globals().copy().items():
-    if name.startswith("command_"):
-        commands[name[8:]] = function
+commands = {name[8:]: function for name, function in globals().copy().items() if name.startswith("command_")}
 
 @client.event
 async def on_message(message):
@@ -64,7 +61,7 @@ async def on_message(message):
         async with semaphore:
             client.counter[str(message.channel.id)] += 1
             if client.counter[str(message.channel.id)] == config["threshold"]:
-                bot_message = config["bot_message"].get(str(message.channel.id), "default message")
+                bot_message = config["bot_message"].get(str(message.channel.id), "You didn't set a message!")
                 prev_msg = client.previous_message.get(str(message.channel.id))
                 if prev_msg:
                     try:
@@ -77,12 +74,18 @@ async def on_message(message):
         command = message.content[len(config["prefix"]):].split()[0]
         if command in commands:
             if message.author.guild_permissions.manage_channels:
-                if command == 'restart':
-                    await commands[command](client, message)
-                else:
+                if command == "rchannel":
                     await commands[command](client, message, config)
+                    await message.delete()
+                else:
+                    if command == 'restart':
+                        await commands[command](client, message)
+                    else:
+                        await commands[command](client, message, config)
+                        await message.delete()
             else:
                 await message.channel.send("You do not have the permission to run this command.")
+                await message.delete()
 
 
 
