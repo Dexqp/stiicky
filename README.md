@@ -8,7 +8,7 @@ Instructions:
 5.    Reastart the bot and you will see "Bot is ready" on the console.
 
 
-#commands
+# commands
 to use these commands make a role names "Admin" and start the bot. Next open the json file and change the "allowed_role": "Admin" to any role you want and use the !restart command
 
 !clearall - Deletes all previously sent messages by the bot in all channels in the server
