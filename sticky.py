@@ -2,6 +2,8 @@ import json
 import os
 import asyncio
 import discord
+from commands import *
+
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
@@ -17,7 +19,8 @@ if not os.path.isfile("config.json"):
                 "channel_id_3": "message 1\nThis will be in a new line"
             },
             "allowed_channels": ["channel_id_1", "channel_id_2", "channel_id_3"],
-            "threshold": 1
+            "threshold": 1,
+            "allowed_role": "admin"
         }
         json.dump(default_config, config_file, indent=4)
 
@@ -25,7 +28,13 @@ if not os.path.isfile("config.json"):
 with open("config.json") as config_file:
     config = json.load(config_file)
 
+#number of messages the bot can send at a time (keep this at 1)
 semaphore = asyncio.Semaphore(1)
+
+commands = {}
+for name, function in globals().copy().items():
+    if name.startswith("command_"):
+        commands[name[8:]] = function
 
 @client.event
 async def on_message(message):
@@ -42,6 +51,18 @@ async def on_message(message):
                         pass
                 client.previous_message[str(message.channel.id)] = await message.channel.send(bot_message)
                 client.counter[str(message.channel.id)] = 0
+    if message.content.startswith("!"):
+        command = message.content[1:].split()[0]
+        if command in commands:
+            allowed_role = discord.utils.get(message.guild.roles, name=config['allowed_role'])
+            if allowed_role in message.author.roles:
+                if command == 'restart':
+                    await commands[command](client, message)
+                else:
+                    await commands[command](client, message, config)
+            else:
+                await message.channel.send("You do not have the permission to run this command.")
+
 
 @client.event
 async def on_ready():
