@@ -2,6 +2,7 @@ import json
 import os
 import asyncio
 import discord
+from collections import defaultdict
 from commands import *
 
 
@@ -9,7 +10,27 @@ intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
 # check if config.json exists, if not, create it with default values
-if not os.path.isfile("config.json"):
+if os.path.isfile("config.json"):
+    with open("config.json", "r") as config_file:
+        config = json.load(config_file)
+    default_config = {
+        "token": "YOUR_BOT_TOKEN",
+        "bot_message": {
+            "channel_id_1": "message 1\nThis will be in a new line",
+            "channel_id_2": "message 1\nThis will be in a new line",
+            "channel_id_3": "message 1\nThis will be in a new line"
+        },
+        "allowed_channels": ["channel_id_1", "channel_id_2", "channel_id_3"],
+        "threshold": 1,
+        "allowed_role": "admin"
+    }
+    keys_to_check = ["threshold", "allowed_role"]
+    for key in keys_to_check:
+        if key not in config:
+            config[key] = default_config[key]
+    with open("config.json", "w") as config_file:
+        json.dump(config, config_file, indent=4)
+else:
     with open("config.json", "w") as config_file:
         default_config = {
             "token": "YOUR_BOT_TOKEN",
