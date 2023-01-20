@@ -9,9 +9,9 @@ Instructions:
 
 
 # commands
-!clearall - Deletes all previously sent messages by the bot in all channels in the server
-!clear [1-100] - Clears specified no.of messages sent by the bot in the channel.
-!restart - Restarts the bot (use this if you made changes to the json while it's running
-!setmessage [message here] - Adds the channel you type this in into "Allowed channels" and sets the message to be stickied in that channel
-!rchannel - Removes the channel from allowed channels.
-!setprefix - sets what command you want to set. This is "!" by default.
+* !clearall - Deletes all previously sent messages by the bot in all channels in the server
+* !clear [1-100] - Clears specified no.of messages sent by the bot in the channel.
+* !restart - Restarts the bot (use this if you made changes to the json while it's running
+* !setmessage [message here] - Adds the channel you type this in into "Allowed channels" and sets the message to be stickied in that channel
+* !rchannel - Removes the channel from allowed channels.
+* !setprefix - sets what command you want to set. This is "!" by default.
