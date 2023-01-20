@@ -22,9 +22,9 @@ if os.path.isfile("config.json"):
         },
         "allowed_channels": ["channel_id_1", "channel_id_2", "channel_id_3"],
         "threshold": 1,
-        "allowed_role": "admin"
+        "prefix": "!"
     }
-    keys_to_check = ["threshold", "allowed_role"]
+    keys_to_check = ["threshold", "prefix"]
     for key in keys_to_check:
         if key not in config:
             config[key] = default_config[key]
@@ -41,7 +41,7 @@ else:
             },
             "allowed_channels": ["channel_id_1", "channel_id_2", "channel_id_3"],
             "threshold": 1,
-            "allowed_role": "admin"
+            "prefix": "!"
         }
         json.dump(default_config, config_file, indent=4)
 
@@ -59,6 +59,7 @@ for name, function in globals().copy().items():
 
 @client.event
 async def on_message(message):
+    client.counter = defaultdict(int, client.counter)
     if message.author != client.user and (not config["allowed_channels"] or str(message.channel.id) in config["allowed_channels"]):
         async with semaphore:
             client.counter[str(message.channel.id)] += 1
@@ -72,17 +73,17 @@ async def on_message(message):
                         pass
                 client.previous_message[str(message.channel.id)] = await message.channel.send(bot_message)
                 client.counter[str(message.channel.id)] = 0
-    if message.content.startswith("!"):
-        command = message.content[1:].split()[0]
+    if message.content.startswith(config["prefix"]):
+        command = message.content[len(config["prefix"]):].split()[0]
         if command in commands:
-            allowed_role = discord.utils.get(message.guild.roles, name=config['allowed_role'])
-            if allowed_role in message.author.roles:
+            if message.author.guild_permissions.manage_channels:
                 if command == 'restart':
                     await commands[command](client, message)
                 else:
                     await commands[command](client, message, config)
             else:
                 await message.channel.send("You do not have the permission to run this command.")
+
 
 
 @client.event
